@@ -78,15 +78,17 @@ Full rules: [CONTRIBUTING.md](CONTRIBUTING.md). Daily status: [docs/status/](doc
 
 ## Repo setup (repo owner, once)
 
-1. On GitHub, create a **private** repository (e.g. `lr-replication`). Do not add a README there.
-2. Push this folder:
+1. On GitHub, create an empty **public** repository named `lr-replication` (no README, license or .gitignore).
+2. Push this folder (it is already a git repo with one commit):
    ```bash
-   git init -b main && git add . && git commit -m "m1: initial scaffold"
-   git remote add origin git@github.com:<owner>/lr-replication.git && git push -u origin main
+   git remote add origin https://github.com/<owner>/lr-replication.git
+   git push -u origin main
    ```
-3. Settings → Collaborators: invite all 6 teammates with Write access.
-4. Settings → Branches → add a rule (or ruleset) for `main`: require a pull request with 1 approval,
-   require the `tests` status check to pass, block force pushes.
-5. Fill in `docs/TEAM.md` and the GitHub handles in `.github/CODEOWNERS`.
-6. Create the shared data folder (Georgia Tech OneDrive/Box/Google Drive), share it with the team,
-   and post its link in the team chat (not in the repo).
+3. Settings → Branches → add a branch protection rule for `main`: require a pull request before merging
+   (approvals: 0, since teammates working from forks can't give counting approvals), require status
+   checks (`tests`, available after CI's first run), and leave force pushes blocked.
+4. Share the repo link. Teammates fork it and open pull requests (CONTRIBUTING.md, "Getting the code").
+   Invite people as collaborators later only if you want them to push directly or merge PRs.
+5. Fill in `docs/TEAM.md` and `.github/CODEOWNERS` as people join.
+6. Create the shared data folder (Georgia Tech OneDrive/Box/Google Drive) and post its link in the team chat,
+   not in the repo: the repo is public and CRSP data is licensed.

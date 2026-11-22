@@ -2,6 +2,21 @@
 
 Seven people, six days, one repo. The rules below keep merges painless.
 
+## Getting the code: fork (default) or direct push
+
+The repo is public, so nobody needs an invite to start.
+
+- **Not invited (default): fork workflow.** On GitHub, click **Fork** on the team repo, then:
+  ```bash
+  git clone https://github.com/<you>/lr-replication.git && cd lr-replication
+  git remote add upstream https://github.com/<owner>/lr-replication.git
+  ```
+  Push branches to your fork (`origin`) and open pull requests into the team repo's `main`.
+- **Invited later (optional):** you can push branches straight to the team repo instead of your fork.
+  Everything else stays the same.
+
+Below, `upstream` means the team repo. If you cloned the team repo directly, read `upstream` as `origin`.
+
 ## The short version
 
 1. One branch per task, named `m<N>/<topic>` (`m3/svd-betas`, `m6/table6`, `m7/factors-download`).
@@ -30,10 +45,16 @@ Small commits; never commit data, credentials, or large outputs (`.gitignore` bl
 ## Staying in sync with main
 
 ```bash
-git fetch origin
-git rebase origin/main        # or: git merge origin/main   (pick one style per person; both are fine)
+git fetch upstream
+git rebase upstream/main      # or: git merge upstream/main   (pick one style per person; both are fine)
 make test
-git push --force-with-lease   # only after a rebase, only on YOUR branch
+git push --force-with-lease origin <your-branch>   # only after a rebase, only on YOUR branch
+```
+
+Starting a new task:
+```bash
+git switch main && git pull upstream main && git push origin main   # keep your fork's main current
+git switch -c m3/<topic>
 ```
 
 Conflicts should be rare because everyone owns different files. If one appears in a file you
@@ -42,7 +63,11 @@ don't own, don't resolve it by guessing: ask its owner.
 ## Pull requests
 
 - Title: `m<N>: <what>`. Fill in the template (what, how tested, contract impact, deviations).
-- CI runs `ruff` and `pytest` on fake data. It must be green.
+- Open it with `gh pr create --repo <owner>/lr-replication --fill` or the "Compare & pull request" button on your fork.
+- CI runs `ruff` and `pytest` on fake data. It must be green. For a first-time contributor's PR,
+  GitHub waits until the repo owner clicks **Approve and run workflows** once.
+- Reviews: your partner reviews and comments "LGTM" (non-collaborators' approvals don't count toward
+  GitHub's required approvals, so the owner merges after the partner's LGTM).
 - Reviewer pairs (review each other's PRs within 2 hours during the day):
 
 | Author | Reviewer | Why |
@@ -65,6 +90,12 @@ don't own, don't resolve it by guessing: ask its owner.
 2. Label the PR `contract-change`, list the affected readers, @-mention them.
 3. Merge only after Member 1 and every affected reader approve. Then announce it in the team chat:
    everyone pulls main and re-runs `make fake`.
+
+## Public repo: what must never be pushed
+
+The repo is public. Never commit CRSP or any WRDS data, raw downloads, credentials (`.pgpass`, `.env`),
+or the paper PDF. `.gitignore` blocks these; never override it with `git add -f`. If something slips in,
+tell Member 1 immediately: deleting it in a new commit is not enough, the history must be rewritten.
 
 ## Sharing data files
 

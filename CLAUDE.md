@@ -22,14 +22,18 @@ touch, and how you will test it. Start once they agree (or right away if they sa
 
 ## 2. Branches and commits
 
+- Run `git remote -v` first. Members usually work in a FORK: `origin` = their fork,
+  `upstream` = the team repo. If there is no `upstream` and `origin` is the team repo, use `origin`
+  wherever this file says `upstream`. If neither is set up, follow CONTRIBUTING.md "Getting the code".
 - Never commit to `main`. Work on a branch named `m<N>/<short-topic>`, e.g. `m3/svd-betas`.
   Start it from an up-to-date main:
-  `git switch main && git pull && git switch -c m3/svd-betas`
+  `git switch main && git pull upstream main && git switch -c m3/svd-betas`
 - Commit small and often. Message format: `m<N>: <what changed>` (e.g. `m3: add Figure 1`).
-- Before opening a PR, bring main in: `git fetch origin && git rebase origin/main`
-  (or `git merge origin/main` if the member prefers). Resolve conflicts only in files you own;
+- Before opening a PR, bring main in: `git fetch upstream && git rebase upstream/main`
+  (or `git merge upstream/main` if the member prefers). Push the branch to `origin`. Resolve conflicts only in files you own;
   if a conflict is in someone else's file, stop and tell the user.
-- Open a PR with `gh pr create --fill` (or on github.com) using the PR template. Never merge your
+- Open a PR into the team repo's `main`: `gh pr create --repo <owner>/lr-replication --fill`
+  (or the "Compare & pull request" button on github.com), using the PR template. Never merge your
   own PR; never force-push to `main`.
 - Details: `CONTRIBUTING.md`.
 
@@ -77,7 +81,7 @@ PR; do not slip the change into a feature PR.
 1. **Timing.** A row dated month t may only use information available at the end of month t.
    Predictive files are indexed by formation month t and predict the return in t+1. Every
    predictive function gets a look-ahead test (`lrrep.timing.assert_no_lookahead`).
-2. **No data in git.** Never commit anything under `data/` (except `data/README.md`), raw
+2. **No data in git. The repo is PUBLIC.** Never commit anything under `data/` (except `data/README.md`), raw
    downloads, WRDS credentials, or `.env`. CRSP is licensed: it lives only in the shared drive.
 3. **Reproducible.** Seed from `CFG["seed"]`. No notebooks as the source of a result: the
    pipeline must regenerate every table and figure. Notebooks are fine for exploring in

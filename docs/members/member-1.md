@@ -18,7 +18,7 @@ Expect: shared tests pass, member tests skipped, `run-fake` shows `[todo]` for u
 
 ## Day by day
 
-- [ ] **Day 1** Create the private GitHub repo and push this scaffold (README "Repo setup"). Invite all 6, protect `main`, fill `docs/TEAM.md` and `.github/CODEOWNERS` handles. Create the shared data folder; share it in the chat.
+- [ ] **Day 1** Create the public GitHub repo and push this scaffold (README "Repo setup"). Protect `main`, share the link; teammates fork. Fill `docs/TEAM.md` and `.github/CODEOWNERS` as people join. Create the shared data folder; share its link in the chat (never in the repo).
 - [ ] **Day 1** 30-minute kickoff: walk through `docs/CONTRACTS.md` and the timing rule; confirm every member ran `make test`. Any contract change requests: decide today.
 - [ ] **Day 2** Review Member 2's loaders and the first real files (row counts, date ranges, `in_universe` share ~ top 70-80% of NYSE-size stocks). Merge PRs at the 21:00 cut.
 - [ ] **Day 3** Look-ahead review: read every predictive function (betas, chars timing, forecasts) and check each has an `assert_no_lookahead` test. Run the 1990-1994 slice end to end on real data.
