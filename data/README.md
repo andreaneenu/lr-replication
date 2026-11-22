@@ -1,6 +1,8 @@
 # Data (never committed)
 
-Real data lives in the team's shared drive folder. Set `LRREP_DATA_DIR` to your synced copy of it.
+Real data lives in the team's shared folder, a Georgia Tech OneDrive folder shared with the team
+(students get 50 GB; our files total well under 10 GB). Sync it with the OneDrive app, or use
+"Add shortcut to My files" on a folder someone shared with you. Set `LRREP_DATA_DIR` to your synced copy of it.
 Fake data is generated locally into `data/fake/` by `make fake`.
 
 ```

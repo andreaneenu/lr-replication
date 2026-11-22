@@ -57,9 +57,11 @@ yet; yours switch on once you write your functions.
 - **Claude in the browser instead?** Start a chat, upload the paper PDF plus `CLAUDE.md`,
   `docs/members/member-N.md` and `docs/CONTRACTS.md`, and say which member you are.
 
-## 5. Read your brief
+## 5. Read the plan and your brief
 
-`docs/members/member-N.md`: what you own, what you deliver, a suggested day-by-day checklist,
+[PLAN.md](PLAN.md) (5 minutes: goal, scope, roles, who waits on whom), then
+
+your brief `docs/members/member-N.md`: what you own, what you deliver, a suggested day-by-day checklist,
 and what "done" means. Member numbers and names: [TEAM.md](TEAM.md).
 
 ---
