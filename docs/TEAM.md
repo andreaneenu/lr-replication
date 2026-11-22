@@ -16,4 +16,4 @@ member number, so keep the names as people will type them.
 Member 1 is the backup reviewer for everyone.
 
 Shared data folder: link posted in the team chat (do not put it in the repo).
-Stand-up: 10:00 ET daily. Integration cut: 21:00 ET daily.
+Coordination happens in the group chat. If you're waiting on someone's file, message them directly.

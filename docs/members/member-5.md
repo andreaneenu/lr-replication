@@ -14,7 +14,9 @@ python -m lrrep.pipeline --stage forecasts --fake
 On fake data, `chars_clean` already exists, so build the models first; the download and cleaning
 can run in parallel.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** Download the Chen-Zimmermann firm-level signals (openassetpricing.com) to the shared folder `raw/chars/`. Pick signals with good coverage from 1970 (aim for 50-100). Confirm the timing convention (see `characteristics.py` docstring) and write how you checked it in your status file.
 - [ ] **Day 1** On fake data: `make_model`, `training_pairs`, `rolling_forecasts` for OLS and LASSO; both tests pass (alignment and no look-ahead).

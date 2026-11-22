@@ -15,7 +15,9 @@ make test                 # tests/test_member_2.py is skipped until build_monthl
 First check which CRSP format your account has (legacy `crsp.msf`/`crsp.dsf` or CIZ `crsp.msf_v2`/`crsp.dsf_v2`)
 and write it in `docs/status/member-2.md` and `docs/DEVIATIONS.md` row 7.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1 (morning)** Confirm WRDS access. If you don't have it, tell Member 1 immediately and ask the GT library; someone else may have it.
 - [ ] **Day 1** `pull_monthly`: monthly returns, price, shares, share and exchange codes (valid on that date), delisting returns, 1965-2021.

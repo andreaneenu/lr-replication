@@ -14,7 +14,9 @@ python -m lrrep.pipeline --stage portfolios --fake
 On fake data, hedging should cut volatility by more than 40% and roughly double the Sharpe ratio
 (that is what `tests/test_member_6.py` checks). Use `lrrep.portfolios.solver.expected_return_portfolio`.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** `portfolio_returns` and `build_portfolios` on fake data; test passes. `table6` with `lrrep.stats.summarize_subperiods`.
 - [ ] **Day 2** Run on the real 1990-1994 slice. Add `figure6` (Sharpe vs K for K in `config.yaml` `hedge.k_list`) and `figures7_9`.

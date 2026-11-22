@@ -11,22 +11,19 @@ hedged vs 0.84 unhedged vs 0.52 market, 1974-2021), which contradicts the Arbitr
 **Our scope:** a 6-day, 7-person replication of the core result with documented
 simplifications. See [docs/PLAN.md](docs/PLAN.md) and [docs/DEVIATIONS.md](docs/DEVIATIONS.md).
 
-## Quick start (every member)
+## New here? Start with [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
 
+It takes about 15 minutes: get the code (invite or fork), set up Python, point your agent at the repo,
+and read your brief in [docs/members/](docs/members/).
+
+Short version, once the code is on your machine:
 ```bash
-git clone <repo-url> && cd lr-replication
 python -m venv .venv && source .venv/bin/activate      # Windows: .venv\Scripts\activate
-make setup        # pip install -e ".[dev]"
-make fake         # synthetic data for every file, so you can start immediately
-make test         # shared tests pass; your member tests are skipped until you build them
-make status       # pipeline stages and their owners
+pip install -e ".[dev]"
+python -m lrrep.fake      # fake data for every file, so you can start immediately
+python -m pytest          # ~14 passed, 8 skipped
 ```
-
-Then open [docs/members/](docs/members/) and read your file. If you use a coding agent
-(Claude Code or similar), start it in this folder and say **"I'm Member N"**: it will read
-[CLAUDE.md](CLAUDE.md) and your member file and pick up where you left off.
-
-No `make`? Use the commands inside the [Makefile](Makefile), e.g. `python -m lrrep.fake`.
+With a coding agent (e.g. Claude Code), open it in this folder and say **"I'm Member N"**.
 
 ## How the pieces fit
 

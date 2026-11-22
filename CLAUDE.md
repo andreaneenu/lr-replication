@@ -90,10 +90,17 @@ PR; do not slip the change into a feature PR.
    with why and its likely effect.
 5. **Fake numbers are never reported.** Fake data only checks that code runs and signs are sensible.
 
-## 6. Keep the team informed
+## 6. Pace, blocking and keeping the team informed
+
+- Members work at their own pace; the day labels in the briefs are suggestions. Don't pressure the user
+  with deadlines; suggest the next most useful task.
+- If the task needs another member's file that isn't in the shared folder yet: keep going on fake data,
+  and tell the user which member owns that file (docs/CONTRACTS.md, names in docs/TEAM.md) so they can
+  message them. Offer to draft that message. Never edit another member's code to unblock yourself.
+
 
 At the end of each work session, update `docs/status/member-<N>.md` (done / next / blocked / files
-delivered) and commit it on your branch. When you deliver a real data file, post in the team chat:
+delivered) and commit it on your branch. When you deliver a real data file, suggest the user posts in the team chat:
 "Member N: <file> delivered to the shared folder, <rows> rows, <date range>".
 
 ## 7. Definition of done for any task

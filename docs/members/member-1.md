@@ -16,11 +16,13 @@ make setup && make fake && make test && make run-fake
 ```
 Expect: shared tests pass, member tests skipped, `run-fake` shows `[todo]` for unbuilt stages.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** Create the public GitHub repo and push this scaffold (README "Repo setup"). Protect `main`, share the link; teammates fork. Fill `docs/TEAM.md` and `.github/CODEOWNERS` as people join. Create the shared data folder; share its link in the chat (never in the repo).
-- [ ] **Day 1** 30-minute kickoff: walk through `docs/CONTRACTS.md` and the timing rule; confirm every member ran `make test`. Any contract change requests: decide today.
-- [ ] **Day 2** Review Member 2's loaders and the first real files (row counts, date ranges, `in_universe` share ~ top 70-80% of NYSE-size stocks). Merge PRs at the 21:00 cut.
+- [ ] **Day 1** Share the repo link and docs/GETTING_STARTED.md; help anyone stuck on setup. Collect contract change requests early.
+- [ ] **Day 2** Review Member 2's loaders and the first real files (row counts, date ranges, `in_universe` share ~ top 70-80% of NYSE-size stocks). Merge approved PRs.
 - [ ] **Day 3** Look-ahead review: read every predictive function (betas, chars timing, forecasts) and check each has an `assert_no_lookahead` test. Run the 1990-1994 slice end to end on real data.
 - [ ] **Day 4** Full real run: `python -m lrrep.pipeline --all`. Fix interface breaks; commit results tables and figures.
 - [ ] **Day 5** Assemble `report/report.md` from `report/sections/`; write Introduction, Method overview, Conclusion.

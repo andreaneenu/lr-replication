@@ -14,7 +14,9 @@ python -m lrrep.pipeline --stage betas --fake
 The full method is in the docstring of `src/lrrep/betas/svd.py`. The fake world has 8 true factors,
 so on fake data the first 8 eigenvalues should clearly dominate.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** Implement `betas_for_month` (SVD, grand-mean demeaning, winsorizing, normalization, sign flip) and `compute_betas`; make both tests pass on fake data, including the look-ahead test.
 - [ ] **Day 1** Decide and document the missing-day rule (default in `config.yaml`: ≥ 240 of 252 days, missing set to 0 after demeaning) in `docs/DEVIATIONS.md` row 5.

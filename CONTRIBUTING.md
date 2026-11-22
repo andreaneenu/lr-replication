@@ -68,7 +68,7 @@ don't own, don't resolve it by guessing: ask its owner.
   GitHub waits until the repo owner clicks **Approve and run workflows** once.
 - Reviews: your partner reviews and comments "LGTM" (non-collaborators' approvals don't count toward
   GitHub's required approvals, so the owner merges after the partner's LGTM).
-- Reviewer pairs (review each other's PRs within 2 hours during the day):
+- Reviewer pairs:
 
 | Author | Reviewer | Why |
 | --- | --- | --- |
@@ -105,14 +105,15 @@ tell Member 1 immediately: deleting it in a new commit is not enough, the histor
 - Never overwrite another member's file in the shared folder.
 - If you re-deliver a file, bump a note in your status file with the date and what changed.
 
-## Daily rhythm
+## Pace and coordination
 
-| Time (ET) | What |
-| --- | --- |
-| 10:00 | 10-minute stand-up (chat or call): yesterday, today, blocked |
-| through the day | PRs reviewed within 2 hours |
-| 21:00 | Integration cut: Member 1 merges approved PRs and runs `make run-fake` on `main` |
-| before bed | Update `docs/status/member-<N>.md` |
+- Everyone works at their own pace. The day labels in the briefs are a suggested pace, not deadlines.
+- **If your work waits on another member's file**, keep building on fake data and message that member
+  directly to ask when it'll be ready. Owners of each file: docs/CONTRACTS.md; names: docs/TEAM.md.
+- **If others wait on you**, tell them roughly when your file will be ready, and deliver a partial
+  version (for example a short sample period) early if you can.
+- Pull requests are reviewed by your partner when they can; the repo owner merges approved ones.
+- Leave a note in `docs/status/member-<N>.md` whenever you stop working.
 
 ## Report and slides
 

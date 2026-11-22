@@ -12,7 +12,9 @@ make fake && make test
 python -m lrrep.pipeline --stage alphas --fake
 ```
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** Download FF5 and momentum (Ken French), q5 (global-q.org), Stambaugh-Yuan factors to the shared folder `raw/factors/`; implement `build_factors`; deliver `factors_ext` (decimals!).
 - [ ] **Day 2** `table10` on fake `portfolios`: alpha (% per month), NW t-stat, loadings, R² for CAPM, FF5+UMD, q5, SY; for `ls_main` and `bn_main`.

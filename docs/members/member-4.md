@@ -16,7 +16,9 @@ python -m lrrep.pipeline --stage factor_portfolios --fake
 Use `lrrep.portfolios.solver.factor_exposure_portfolio` for weights and `lrrep.stats` for summaries
 and Newey-West t-stats. Don't re-implement either.
 
-## Day by day
+## Day by day (suggested pace)
+
+Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
 - [ ] **Day 1** `build_factor_portfolios` on fake data (test passes: fake factors 2-8 have zero mean, so their portfolios earn ~0). `table2`, `figure4`.
 - [ ] **Day 1** `monthly_slopes` and `table8` on fake data (cross-sectional OLS each month; average slopes; NW t-stats).
