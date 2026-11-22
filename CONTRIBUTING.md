@@ -1,0 +1,90 @@
+# How we work together
+
+Seven people, six days, one repo. The rules below keep merges painless.
+
+## The short version
+
+1. One branch per task, named `m<N>/<topic>` (`m3/svd-betas`, `m6/table6`, `m7/factors-download`).
+2. Edit only the files you own (see the table in `CLAUDE.md` and `.github/CODEOWNERS`).
+3. Open a pull request into `main` early (as a draft is fine). It merges when CI is green and one
+   reviewer approves.
+4. Pull `main` into your branch at least twice a day.
+5. Shared files change only through a `contract-change` PR.
+
+## Branches
+
+| Branch | Purpose | Who merges |
+| --- | --- | --- |
+| `main` | Always runs: `make test` passes and `make run-fake` works | Member 1 or the reviewer, after approval |
+| `m<N>/<topic>` | One member's task | Squash-merged into `main` by PR |
+| `contracts/<topic>` | A change to a shared file (contracts, config, solver, io, stats) | Member 1, after every affected reader approves |
+| `report/<section>` | Writing (optional: report text can also go on your feature branch) | Reviewer |
+
+Keep branches short-lived: merge at least once a day. A branch older than a day collects conflicts.
+
+## Commits
+
+Format: `m<N>: <imperative summary>`, e.g. `m5: add yearly random forest forecasts`.
+Small commits; never commit data, credentials, or large outputs (`.gitignore` blocks most).
+
+## Staying in sync with main
+
+```bash
+git fetch origin
+git rebase origin/main        # or: git merge origin/main   (pick one style per person; both are fine)
+make test
+git push --force-with-lease   # only after a rebase, only on YOUR branch
+```
+
+Conflicts should be rare because everyone owns different files. If one appears in a file you
+don't own, don't resolve it by guessing: ask its owner.
+
+## Pull requests
+
+- Title: `m<N>: <what>`. Fill in the template (what, how tested, contract impact, deviations).
+- CI runs `ruff` and `pytest` on fake data. It must be green.
+- Reviewer pairs (review each other's PRs within 2 hours during the day):
+
+| Author | Reviewer | Why |
+| --- | --- | --- |
+| Member 2 | Member 3 | Member 3 consumes the CRSP files |
+| Member 3 | Member 4 | Member 4 consumes betas first |
+| Member 4 | Member 6 | Same solver, same portfolio logic |
+| Member 5 | Member 6 | Member 6 consumes the forecasts |
+| Member 6 | Member 7 | Member 7 tests the portfolios |
+| Member 7 | Member 5 | Cross-check of statistics |
+| Member 1 | Member 2 | Shared code (any member may step in) |
+
+  Member 1 may approve any PR when the paired reviewer is unavailable.
+- Merge method: **Squash and merge**, then delete the branch.
+
+## Changing a contract or a shared file
+
+1. Branch `contracts/<topic>`; change `src/lrrep/contracts.py` AND `docs/CONTRACTS.md` together
+   (and `fake.py`, so the fake files still match).
+2. Label the PR `contract-change`, list the affected readers, @-mention them.
+3. Merge only after Member 1 and every affected reader approve. Then announce it in the team chat:
+   everyone pulls main and re-runs `make fake`.
+
+## Sharing data files
+
+- Real data: the shared drive folder (`LRREP_DATA_DIR`). Write your file there with
+  `lrrep.io.save` (it validates the contract), then post in the chat:
+  `Member N: <file> delivered, <rows> rows, <first>-<last> month`.
+- Never overwrite another member's file in the shared folder.
+- If you re-deliver a file, bump a note in your status file with the date and what changed.
+
+## Daily rhythm
+
+| Time (ET) | What |
+| --- | --- |
+| 10:00 | 10-minute stand-up (chat or call): yesterday, today, blocked |
+| through the day | PRs reviewed within 2 hours |
+| 21:00 | Integration cut: Member 1 merges approved PRs and runs `make run-fake` on `main` |
+| before bed | Update `docs/status/member-<N>.md` |
+
+## Report and slides
+
+Each member writes their section in `report/sections/<NN>-<topic>.md` (Markdown, figures linked
+from `results/figures/`). Member 1 assembles and edits `report/report.md` on day 5-6.
+Member 7 owns `slides/`; each member sends 1-2 slides' worth of content by day 5.

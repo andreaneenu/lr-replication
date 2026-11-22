@@ -1,0 +1,23 @@
+# Replace @member-N with GitHub handles on day 1 (Member 1). GitHub then requests the owner's
+# review automatically when their files change.
+*                                   @member-1
+/src/lrrep/data/crsp.py             @member-2
+/tests/test_member_2.py             @member-2
+/src/lrrep/betas/                   @member-3
+/tests/test_member_3.py             @member-3
+/src/lrrep/portfolios/factor_exposure.py  @member-4
+/src/lrrep/tests_ap/fama_macbeth.py @member-4
+/tests/test_member_4.py             @member-4
+/src/lrrep/forecast/                @member-5
+/tests/test_member_5.py             @member-5
+/src/lrrep/portfolios/main_portfolios.py  @member-6
+/tests/test_member_6.py             @member-6
+/src/lrrep/data/external_factors.py @member-7
+/src/lrrep/tests_ap/alphas.py       @member-7
+/src/lrrep/report/                  @member-7
+/tests/test_member_7.py             @member-7
+/slides/                            @member-7
+# shared files: lead plus the main readers
+/src/lrrep/contracts.py             @member-1 @member-4 @member-6
+/docs/CONTRACTS.md                  @member-1 @member-4 @member-6
+/config.yaml                        @member-1

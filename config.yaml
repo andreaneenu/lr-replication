@@ -1,0 +1,57 @@
+# Single source of truth for every setting. Never hard-code these values in code:
+# read them with `from lrrep.config import CFG`.
+# Changing a value here is a "shared file" change: open a PR and tag the owners it affects.
+
+seed: 42
+
+paths:
+  # Where the Parquet data files live. Override with the env var LRREP_DATA_DIR
+  # (point it at your synced shared-drive folder). Fake data goes to data/fake/.
+  data_dir: data/real
+  fake_dir: data/fake
+  results_dir: results
+
+sample:
+  start: "1974-01"          # first month of out-of-sample portfolio returns (paper)
+  end: "2021-12"
+  fallback_start: "1990-01" # use only if compute does not fit; record in docs/DEVIATIONS.md
+  history_start: "1965-01"  # data pulled from here so the first windows are full
+
+universe:
+  shrcd: [10, 11]           # US common stocks
+  exchcd: [1, 2, 3]         # NYSE, AMEX, NASDAQ
+  nyse_size_pct: 0.20       # drop stocks below the NYSE 20th percentile of market cap
+
+betas:                      # Member 3 (paper Section 2.1)
+  window_days: 252          # past 12 months of daily returns
+  min_obs: 240              # keep a stock only if it has at least this many days in the window
+  winsor: 0.01              # winsorize the demeaned return matrix at 1% / 99%
+  k_max: 100                # number of betas saved each month
+
+hedge:                      # Members 4 and 6 (paper Sections 2.3 and 2.5)
+  k_main: 50
+  k_list: [5, 10, 25, 50, 100]   # for Figure 6 (Sharpe vs number of factors hedged)
+
+forecast:                   # Member 5 (paper Section 2.4)
+  train_months: 60
+  retrain_every_months: 12  # paper: 1 (monthly). Deviation recorded in DEVIATIONS.md
+  min_coverage: 0.90        # drop a characteristic missing more than 10% in a window
+  random_forest:
+    n_estimators: 500
+    max_depth: 5
+    n_jobs: -1
+  lasso_alpha: null         # null = choose by time-series CV inside the training window
+
+tests:
+  newey_west_lags: 12
+  subperiods:
+    - ["1974-01", "2021-12"]
+    - ["1974-01", "1999-12"]
+    - ["2000-01", "2021-12"]
+
+fake:                       # synthetic data used before real data arrives
+  n_stocks: 300
+  start: "1998-01"
+  end: "2009-12"
+  n_factors: 8
+  n_chars: 12

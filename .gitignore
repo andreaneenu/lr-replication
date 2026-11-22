@@ -1,0 +1,26 @@
+# data and credentials: never commit
+data/*
+!data/README.md
+.env
+.pgpass
+*.pgpass
+docs/paper/*.pdf
+*.parquet
+*.feather
+*.h5
+*.zip
+
+# python
+__pycache__/
+*.egg-info/
+.venv/
+venv/
+.pytest_cache/
+.ruff_cache/
+.ipynb_checkpoints/
+notebooks/**/*.ipynb
+
+# OS / editors
+.DS_Store
+.vscode/
+.idea/
