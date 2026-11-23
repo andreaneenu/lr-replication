@@ -51,7 +51,7 @@ def monthly_slopes(mu_hat, betas_svd, crsp_monthly, mu_col: str, k: int) -> pd.D
         coef, *_ = np.linalg.lstsq(X, y, rcond=None)
         resid = y - X @ coef
         tss = ((y - y.mean()) ** 2).sum()
-        out[t] = dict(zip(names, coef)) | {"r2": 1 - (resid @ resid) / tss if tss > 0 else np.nan, "n": len(g)}
+        out[t] = dict(zip(names, coef, strict=True)) | {"r2": 1 - (resid @ resid) / tss if tss > 0 else np.nan, "n": len(g)}
     res = pd.DataFrame.from_dict(out, orient="index")
     res.index.name = "month"
     return res

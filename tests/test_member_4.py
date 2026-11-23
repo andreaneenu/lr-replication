@@ -7,6 +7,7 @@ from lrrep.io import load
 from lrrep.portfolios.factor_exposure import build_factor_portfolios
 from lrrep.tests_ap.cashflow_news import announcement_flags, split_returns
 from lrrep.tests_ap.fama_macbeth import monthly_slopes, table8
+from lrrep.timing import assert_no_lookahead
 from tests.conftest import todo
 
 
@@ -45,7 +46,7 @@ def test_fama_macbeth_recovers_known_slope():
         rng = np.random.default_rng(0)
         months = pd.date_range("2000-01-31", periods=6, freq="ME")
         permno = np.arange(60)
-        mu = pd.DataFrame([(p, t, x) for t in months for p, x in zip(permno, rng.normal(size=60))],
+        mu = pd.DataFrame([(p, t, x) for t in months for p, x in zip(permno, rng.normal(size=60), strict=True)],
                           columns=["permno", "month", "mu_ols"])
         nxt = mu.copy()
         nxt["month"] = nxt["month"] + pd.offsets.MonthEnd(1)
@@ -77,3 +78,12 @@ def test_split_returns_adds_up_to_total(fake):
         s = split_returns(w, daily, flags)
         assert {"ret_ann_bn", "ret_other_bn", "ret_ann_ls", "ret_other_ls", "share_days_ann"} <= set(s.columns)
         assert s.notna().all().all()
+
+
+def test_factor_portfolios_no_lookahead(fake):
+    """The return realized in month t must not change when all data after t is removed."""
+    with todo():
+        b, m = load("betas_svd", fake=True), load("crsp_monthly", fake=True)
+        t = pd.Timestamp("2003-06-30")
+        assert_no_lookahead(lambda betas_svd, crsp_monthly: build_factor_portfolios(betas_svd, crsp_monthly, k=5),
+                            {"betas_svd": b, "crsp_monthly": m}, t, key=["month"])
