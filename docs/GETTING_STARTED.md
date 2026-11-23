@@ -59,7 +59,7 @@ yet; yours switch on once you write your functions.
 
 ## 5. Read the plan and your brief
 
-[PLAN.md](PLAN.md) (5 minutes: goal, scope, roles, who waits on whom), then
+[PLAN.md](PLAN.md) (5 minutes: goal, extension, roles, who waits on whom), then
 
 your brief `docs/members/member-N.md`: what you own, what you deliver, a suggested day-by-day checklist,
 and what "done" means. Member numbers and names: [TEAM.md](TEAM.md).

@@ -1,40 +1,41 @@
-# Member 1: lead, integration, portfolio solver
+# Member 1: lead, integration, report
 
 **Owns:** `src/lrrep/{config,contracts,io,fake,stats,timing,pipeline}.py`, `src/lrrep/portfolios/solver.py`,
-`config.yaml`, `tests/test_shared.py`, root docs, `.github/`, `report/report.md` (final assembly).
-**Reads:** everything. **Writes:** no data file of its own; the integrated real run and the report.
-**Paper:** Section 2.5 (pure plays), and skim all of Sections 2-3.
+`src/lrrep/report/code_appendix.py`, `config.yaml`, `tests/test_shared.py`, root docs, `.github/`, `report/report.md`.
+**Reads:** everything. **Writes:** the integrated real run; report sections 1-3, 9 and the appendix.
+**Paper:** Section 2.5 (pure plays); skim Sections 2-3. **Course rules:** [../REQUIREMENTS.md](../REQUIREMENTS.md).
 
-The starter code for your modules is already written and tested (solver, contracts, fake data,
-pipeline, stats, look-ahead helper). Your job is to keep it right, unblock everyone, and run the
-real pipeline end to end.
+The shared code is already written and tested (solver, contracts, fake data, pipeline, stats,
+look-ahead helper, event subsamples, code appendix). Your job: keep it right, unblock people, run the
+real pipeline, and make the report and presentation hang together.
 
 ## Start here
 
 ```bash
-make setup && make fake && make test && make run-fake
+pip install -e ".[dev]" && python -m lrrep.fake && python -m pytest && python -m lrrep.pipeline --all --fake --keep-going
 ```
-Expect: shared tests pass, member tests skipped, `run-fake` shows `[todo]` for unbuilt stages.
 
 ## Day by day (suggested pace)
 
 Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
-- [ ] **Day 1** Create the public GitHub repo and push this scaffold (README "Repo setup"). Protect `main`, share the link; teammates fork. Fill `docs/TEAM.md` and `.github/CODEOWNERS` as people join. Create the shared data folder; share its link in the chat (never in the repo).
-- [ ] **Day 1** Share the repo link and docs/GETTING_STARTED.md; help anyone stuck on setup. Collect contract change requests early.
-- [ ] **Day 2** Review Member 2's loaders and the first real files (row counts, date ranges, `in_universe` share ~ top 70-80% of NYSE-size stocks). Merge approved PRs.
-- [ ] **Day 3** Look-ahead review: read every predictive function (betas, chars timing, forecasts) and check each has an `assert_no_lookahead` test. Run the 1990-1994 slice end to end on real data.
-- [ ] **Day 4** Full real run: `python -m lrrep.pipeline --all`. Fix interface breaks; commit results tables and figures.
-- [ ] **Day 5** Assemble `report/report.md` from `report/sections/`; write Introduction, Method overview, Conclusion.
-- [ ] **Day 6** Edit to one voice, check every number against `results/tables/`, submit.
+- [ ] **Day 1** Make sure our paper is claimed with the professor and our presentation slot is booked (12/3 if still possible). Fill `docs/TEAM.md`. Help anyone stuck on setup.
+- [ ] **Day 1** When Members 2 and 5 report the last month of CRSP and of the characteristics, set `sample.end` in `config.yaml` to the earlier one (contract-change PR).
+- [ ] **Day 2** Review Member 2's loaders and the first real files (row counts, date ranges, `in_universe` share). Merge approved PRs.
+- [ ] **Day 3** Look-ahead review of every predictive function (betas, characteristic timing, forecasts); each needs an `assert_no_lookahead` test. Run the 1990-1994 slice end to end on real data.
+- [ ] **Day 4** Full real run: `python -m lrrep.pipeline --all`. Fix interface breaks; commit result tables and figures.
+- [ ] **Day 5** Results freeze for the slides: check every extension table exists and makes sense (`table6_events`, `costs`, `cashflow_news`, `table10_post`).
+- [ ] **Day 6** Draft report sections 2 (introduction: must state the extension clearly) and 3 (objectives); help Member 7 with slides.
+- [ ] **Day 7** Rehearsal (12 minutes, timed). Start `report/report.md` from the section files.
+- [ ] **After the presentation** Conclusion, cover page (names alphabetical), code appendix (`python -m lrrep.report.code_appendix`), assemble and edit to ~15 pages by 12/12.
 
 ## Definition of done
 
-`python -m lrrep.pipeline --all` on real data regenerates every table and figure listed in
-`docs/CONTRACTS.md` → Results; `make test` green on `main`; report submitted.
+`python -m lrrep.pipeline --all` regenerates every table and figure in `docs/CONTRACTS.md` → Results;
+`main` passes tests; report submitted by 12/15 noon with the extension spelled out in the introduction.
 
 ## Pitfalls
 
-- Don't let shared files drift: any change to `contracts.py` must update `docs/CONTRACTS.md` and `fake.py` in the same PR.
-- The solver uses least squares on the small m x m system; if a month has fewer stocks than constraints, skip that month and log it.
-- Keep `main` green: if a merge breaks `make run-fake`, revert first, debug second.
+- Any change to `contracts.py` must update `docs/CONTRACTS.md` and `fake.py` in the same PR.
+- The solver uses least squares on the small m x m system; if a month has fewer stocks than constraints, skip it and log it.
+- Keep `main` green: if a merge breaks the fake run, revert first, debug second.

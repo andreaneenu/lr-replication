@@ -55,3 +55,22 @@ def time_series_regression(y: pd.Series, X: pd.DataFrame, lags: int | None = Non
     lags = CFG["tests"]["newey_west_lags"] if lags is None else lags
     d = pd.concat([y.rename("y"), X], axis=1).dropna()
     return sm.OLS(d["y"], sm.add_constant(d.drop(columns="y"))).fit(cov_type="HAC", cov_kwds={"maxlags": lags})
+
+
+def summarize_events(df: pd.DataFrame, cols: list[str] | None = None,
+                     start: str | None = None, end: str | None = None) -> dict[str, pd.DataFrame]:
+    """Robustness and extension splits: for each event in CFG['tests']['events'], a summary for the
+    months before the event and from the event on (within [start, end], default the full sample)."""
+    start = start or CFG["sample"]["start"]
+    end = end or CFG["sample"]["end"]
+    out = {}
+    for name, ev in CFG["tests"]["events"].items():
+        before_end = (pd.Timestamp(ev) - pd.offsets.MonthEnd(1)).strftime("%Y-%m")
+        out[f"{name}: before"] = summarize(subperiod(df, start, before_end), cols)
+        out[f"{name}: after"] = summarize(subperiod(df, ev, end), cols)
+    return out
+
+
+def stack_panels(panels: dict[str, pd.DataFrame]) -> pd.DataFrame:
+    """Turn {panel name: summary} into one long table with a 'panel' index level (for save_table)."""
+    return pd.concat(panels, names=["panel", "stat"])

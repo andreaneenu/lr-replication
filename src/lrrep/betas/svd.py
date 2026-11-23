@@ -54,10 +54,20 @@ def figure1(eigen: pd.DataFrame) -> None:
     raise NotImplementedError("Member 3: Figure 1")
 
 
+def compute_betas_weekly(crsp_daily: pd.DataFrame, crsp_monthly: pd.DataFrame,
+                         months: list[pd.Timestamp] | None = None, weeks: int = 104) -> pd.DataFrame:
+    """ROBUSTNESS (guideline: 'frequency of observation'): the same SVD betas, but from WEEKLY excess
+    returns (compound daily exret within Wednesday-to-Wednesday or calendar weeks) over the past
+    `weeks` weeks ending at month-end t. Same normalization. Returns the betas_svd_weekly contract.
+    Reuse betas_for_month on the weekly matrix (rename `date` to the week-end date)."""
+    raise NotImplementedError("Member 3: weekly-return betas")
+
+
 def run(fake: bool = False) -> None:
     daily, monthly = load("crsp_daily", fake), load("crsp_monthly", fake)
     betas, eig = compute_betas(daily, monthly)
     save(betas, "betas_svd", fake)
     save(eig, "eigen", fake)
     figure1(eig)
+    save(compute_betas_weekly(daily, monthly), "betas_svd_weekly", fake)
     _ = (np, CFG)

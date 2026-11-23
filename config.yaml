@@ -13,7 +13,8 @@ paths:
 
 sample:
   start: "1974-01"          # first month of out-of-sample portfolio returns (paper)
-  end: "2021-12"
+  end: "2024-12"            # EXTENSION: latest month with CRSP AND characteristics (Members 2, 5 confirm on day 1)
+  paper_end: "2021-12"      # the paper's last month: replication tables use start..paper_end
   fallback_start: "1990-01" # use only if compute does not fit; record in docs/DEVIATIONS.md
   history_start: "1965-01"  # data pulled from here so the first windows are full
 
@@ -44,10 +45,23 @@ forecast:                   # Member 5 (paper Section 2.4)
 
 tests:
   newey_west_lags: 12
+  # Replication panels (paper Table 6)
   subperiods:
     - ["1974-01", "2021-12"]
     - ["1974-01", "1999-12"]
     - ["2000-01", "2021-12"]
+  # Robustness: guideline's event splits, and the EXTENSION's post-publication period.
+  # Each event splits the sample into [start, event-1] and [event, end].
+  events:
+    volcker: "1979-10"            # Volcker monetary policy shift
+    gfc: "2008-09"                # Lehman / global financial crisis
+    covid: "2020-03"              # COVID crash
+    post_publication: "2020-06"   # paper first posted on SSRN, May 2020 -> out-of-sample after
+
+extension:
+  cost_bps: [5, 10, 25, 50]       # one-way trading cost per $ traded, for returns after costs (Member 6)
+  announcement_window: [-1, 1]    # trading days around an earnings announcement (Member 4)
+  quarterly_rebalance: true       # frequency robustness: hold portfolios 3 months (Member 6)
 
 fake:                       # synthetic data used before real data arrives
   n_stocks: 300

@@ -20,6 +20,8 @@ Cleaning (paper Section 3.1, adapted):
  - Standardize each characteristic cross-sectionally each month (rank to [-1, 1] or z-score;
    pick one and document it). Name columns c_<signal>.
  - For the 6-day plan, start with signals that have good coverage from 1970 on (expect 50-100).
+ - EXTENSION: check on day 1 the LAST month covered by the latest Chen-Zimmermann release; it sets
+   CFG sample.end together with CRSP's last month. Tell Member 1 so config.yaml can be updated.
 """
 from __future__ import annotations
 
@@ -37,6 +39,13 @@ def clean(signals: pd.DataFrame, crsp_monthly: pd.DataFrame) -> pd.DataFrame:
     """Merge to the universe, drop low-coverage signals, fill medians, standardize per month.
     Return the chars_clean contract frame (permno, month, c_* float columns)."""
     raise NotImplementedError("Member 5: clean characteristics")
+
+
+def characteristics_summary(chars_raw: pd.DataFrame) -> pd.DataFrame:
+    """REPORT: number of characteristics used, coverage over time, and for the 10 best-known ones
+    (size, book-to-market, momentum, profitability, investment, ...) mean/sd/percentiles of the raw
+    values. Save as summary_chars."""
+    raise NotImplementedError("Member 5: characteristics summary table")
 
 
 def run(fake: bool = False) -> None:

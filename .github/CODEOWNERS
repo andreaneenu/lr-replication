@@ -7,14 +7,17 @@
 /tests/test_member_3.py             @member-3
 /src/lrrep/portfolios/factor_exposure.py  @member-4
 /src/lrrep/tests_ap/fama_macbeth.py @member-4
+/src/lrrep/tests_ap/cashflow_news.py @member-4
 /tests/test_member_4.py             @member-4
 /src/lrrep/forecast/                @member-5
 /tests/test_member_5.py             @member-5
 /src/lrrep/portfolios/main_portfolios.py  @member-6
+/src/lrrep/portfolios/costs.py      @member-6
 /tests/test_member_6.py             @member-6
 /src/lrrep/data/external_factors.py @member-7
 /src/lrrep/tests_ap/alphas.py       @member-7
-/src/lrrep/report/                  @member-7
+/src/lrrep/report/comparison.py     @member-7
+/src/lrrep/report/code_appendix.py  @member-1
 /tests/test_member_7.py             @member-7
 /slides/                            @member-7
 # shared files: lead plus the main readers

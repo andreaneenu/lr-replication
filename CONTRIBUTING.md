@@ -1,6 +1,6 @@
 # How we work together
 
-Seven people, six days, one repo. The rules below keep merges painless.
+Seven people, about a week, one repo. The rules below keep merges painless.
 
 ## Getting the code: fork (default) or direct push
 
@@ -117,6 +117,6 @@ tell Member 1 immediately: deleting it in a new commit is not enough, the histor
 
 ## Report and slides
 
-Each member writes their section in `report/sections/<NN>-<topic>.md` (Markdown, figures linked
-from `results/figures/`). Member 1 assembles and edits `report/report.md` on day 5-6.
-Member 7 owns `slides/`; each member sends 1-2 slides' worth of content by day 5.
+The report follows the course guideline's section order; files and owners are in `report/README.md`.
+Draft your section(s) on your own branch. Member 1 assembles `report/report.md`.
+Member 7 owns `slides/` (12 minutes, with results); send your slide content by day 5.

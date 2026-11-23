@@ -67,6 +67,13 @@ CONTRACTS: dict[str, Contract] = {
         description="Latent-factor betas from the SVD of the past 252 days ending in month t. "
                     "beta_1 is the largest factor. Used as the hedge for month t+1 returns.",
     ),
+    "betas_svd_weekly": Contract(
+        owner=3, readers=(6,), key=("permno", "month"),
+        columns={"permno": "int", "month": "datetime"},
+        wide_prefix="beta_", wide_min=5,
+        description="ROBUSTNESS (frequency): same as betas_svd but from WEEKLY excess returns over the past "
+                    "104 weeks. Member 6 rebuilds the beta-neutral portfolio with these.",
+    ),
     "eigen": Contract(
         owner=3, readers=(3,), key=("month", "k"),
         columns={"month": "datetime", "k": "int", "eigenvalue": "float", "share_explained": "float"},
@@ -91,6 +98,18 @@ CONTRACTS: dict[str, Contract] = {
         wide_prefix="fexp_", wide_min=5,
         description="Zero-cost factor-exposure portfolio returns (beta 1 on factor k, 0 on others), "
                     "realized in `month`.",
+    ),
+    "earnings_dates": Contract(
+        owner=2, readers=(4,), key=("permno", "rdq"),
+        columns={"permno": "int", "rdq": "datetime"},
+        description="Quarterly earnings announcement dates (Compustat fundq.rdq) linked to permno via "
+                    "the CRSP-Compustat link table. Used for the cash-flow news test.",
+    ),
+    "portfolio_weights": Contract(
+        owner=6, readers=(4,), key=("permno", "month"),
+        columns={"permno": "int", "month": "datetime", "w_ls": "float", "w_bn": "float"},
+        description="Weights of the main unhedged (w_ls) and beta-neutral (w_bn) portfolios formed at the "
+                    "end of `month` (formation month t), held during t+1. Each sums to 0, sum|w| = 2.",
     ),
     "portfolios": Contract(
         owner=6, readers=(7,), key=("month",),

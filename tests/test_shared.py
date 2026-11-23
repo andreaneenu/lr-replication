@@ -49,3 +49,14 @@ def test_stats():
     assert np.isclose(sharpe_annual(r), r.mean() / r.std() * np.sqrt(12))
     s = summarize(pd.DataFrame({"month": pd.date_range("2000-01-31", periods=4, freq="ME"), "x": r}))
     assert np.isclose(s.loc["Mean", "x"], 1.25)
+
+
+def test_event_summaries_cover_both_sides():
+    from lrrep.stats import summarize_events
+
+    months = pd.date_range("1974-01-31", "2024-12-31", freq="ME")
+    df = pd.DataFrame({"month": months, "x": np.random.default_rng(0).normal(0.01, 0.02, len(months))})
+    panels = summarize_events(df, ["x"])
+    assert "post_publication: after" in panels and "volcker: before" in panels
+    n = panels["gfc: before"].loc["N months", "x"] + panels["gfc: after"].loc["N months", "x"]
+    assert n == len(months)

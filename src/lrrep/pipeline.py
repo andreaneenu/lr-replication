@@ -18,11 +18,15 @@ STAGES: list[tuple[str, str, int]] = [
     ("betas", "lrrep.betas.svd", 3),
     ("chars", "lrrep.forecast.characteristics", 5),
     ("forecasts", "lrrep.forecast.models", 5),
+    ("importance", "lrrep.forecast.importance", 5),
     ("factor_portfolios", "lrrep.portfolios.factor_exposure", 4),
     ("portfolios", "lrrep.portfolios.main_portfolios", 6),
+    ("costs", "lrrep.portfolios.costs", 6),
+    ("cashflow_news", "lrrep.tests_ap.cashflow_news", 4),
     ("fama_macbeth", "lrrep.tests_ap.fama_macbeth", 4),
     ("alphas", "lrrep.tests_ap.alphas", 7),
     ("comparison", "lrrep.report.comparison", 7),
+    ("code_appendix", "lrrep.report.code_appendix", 1),
 ]
 
 

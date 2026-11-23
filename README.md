@@ -8,8 +8,11 @@ exposure to common risk factors. A long-short portfolio built from return foreca
 hedged against all 50 latent factors still earns a high Sharpe ratio (paper Table 6: 2.31
 hedged vs 0.84 unhedged vs 0.52 market, 1974-2021), which contradicts the Arbitrage Pricing Theory.
 
-**Our scope:** a 6-day, 7-person replication of the core result with documented
-simplifications. **The plan (goal, scope, roles, schedule, risks): [docs/PLAN.md](docs/PLAN.md).**
+**Our extension:** does the factor-neutral anomaly survive after the paper became public (2020 onward,
+incl. COVID) and after trading costs, and do its returns arrive with earnings (cash-flow) news?
+
+**Our scope:** a 7-day, 7-person replication and extension with documented simplifications.
+Course requirements and where each is covered: [docs/REQUIREMENTS.md](docs/REQUIREMENTS.md). **The plan (goal, scope, roles, schedule, risks): [docs/PLAN.md](docs/PLAN.md).**
 Deviations from the paper: [docs/DEVIATIONS.md](docs/DEVIATIONS.md).
 
 ## New here? Start with [docs/GETTING_STARTED.md](docs/GETTING_STARTED.md)
@@ -41,11 +44,11 @@ Every arrow is a Parquet file with a fixed format: [docs/CONTRACTS.md](docs/CONT
 | Member | Stage | Code | Main outputs |
 | --- | --- | --- | --- |
 | 1 | Lead, integration | `pipeline.py`, `solver.py`, shared modules | one-command run, report |
-| 2 | CRSP data | `data/crsp.py` | `crsp_daily`, `crsp_monthly`, `market` |
-| 3 | SVD betas | `betas/svd.py` | `betas_svd`, `eigen`, Figure 1 |
-| 4 | Factor portfolios, Fama-MacBeth | `portfolios/factor_exposure.py`, `tests_ap/fama_macbeth.py` | Table 2, Table 8 |
-| 5 | Characteristics, forecasts | `forecast/` | `chars_clean`, `mu_hat` |
-| 6 | Main portfolios | `portfolios/main_portfolios.py` | Table 6, Figures 6-9 |
+| 2 | CRSP data, earnings dates | `data/crsp.py` | `crsp_daily`, `crsp_monthly`, `market`, `earnings_dates`, summary stats |
+| 3 | SVD betas | `betas/svd.py` | `betas_svd`, `betas_svd_weekly`, `eigen`, Figure 1, literature review |
+| 4 | Factor premia, Fama-MacBeth, cash-flow news | `portfolios/factor_exposure.py`, `tests_ap/fama_macbeth.py`, `tests_ap/cashflow_news.py` | Table 2, Table 8, cash-flow news test |
+| 5 | Characteristics, forecasts | `forecast/` | `chars_clean`, `mu_hat`, flow chart |
+| 6 | Main portfolios, post-publication, costs | `portfolios/main_portfolios.py`, `portfolios/costs.py` | Table 6, Figures 6-9, events, costs |
 | 7 | External factors, alphas, slides | `data/external_factors.py`, `tests_ap/alphas.py`, `report/comparison.py` | Table 10, comparison table, slides |
 
 Names and GitHub handles: [docs/TEAM.md](docs/TEAM.md).

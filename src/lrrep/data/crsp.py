@@ -81,3 +81,23 @@ def run(fake: bool = False) -> None:
     # db = wrds.Connection()
     # ... save(monthly, "crsp_monthly"); save(daily, "crsp_daily"); save(market, "market")
     _ = (CFG, save)
+
+
+# ---------------------------------------------------------------- extension and report additions
+
+def pull_earnings_dates(db, start: str, end: str) -> pd.DataFrame:
+    """EXTENSION (cash-flow news test, used by Member 4): quarterly earnings announcement dates.
+
+    Compustat quarterly fundamentals (comp.fundq: gvkey, datadate, rdq) linked to CRSP permno with the
+    CRSP-Compustat merged link table (crsp.ccmxpf_linktable or crsp.ccmxpf_lnkhist; keep linktype in
+    ('LU','LC') and linkprim in ('P','C'), with rdq between linkdt and linkenddt).
+    Return the earnings_dates contract: permno, rdq (datetime). Drop missing rdq and duplicates.
+    """
+    raise NotImplementedError("Member 2: earnings announcement dates")
+
+
+def summary_stats(crsp_monthly: pd.DataFrame) -> pd.DataFrame:
+    """REPORT (guideline: 'Table of summary statistics'): by decade or full sample, the number of
+    universe stocks per month (mean, min, max), mean/median/sd of monthly exret, median market cap.
+    Save with lrrep.io.save_table(df, 'summary_stats')."""
+    raise NotImplementedError("Member 2: summary statistics table")

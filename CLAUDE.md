@@ -1,6 +1,6 @@
 # CLAUDE.md: instructions for coding agents in this repo
 
-This repo is a 7-person, 6-day group replication of Lopez-Lira & Roussanov (2023),
+This repo is a 7-person, 7-day group replication AND EXTENSION of Lopez-Lira & Roussanov (2023),
 "Do Common Factors Really Explain the Cross-Section of Stock Returns?". Each human member
 owns one stage of a pipeline. You are working for ONE member at a time.
 
@@ -14,7 +14,8 @@ Then read, in this order, before writing any code:
 1. `docs/members/member-<N>.md`: your role, files you own, day-by-day tasks, definition of done.
 2. `docs/CONTRACTS.md`: the exact format of every file you read or write.
 3. `docs/status/member-<N>.md`: where this member left off.
-4. The paper section listed in your member file. A summary is in `docs/PAPER_NOTES.md`; the
+4. `docs/PLAN.md` (goal, extension, schedule) and `docs/REQUIREMENTS.md` (what the course grades).
+5. The paper section listed in your member file. A summary is in `docs/PAPER_NOTES.md`; the
    PDF, if present, is in `docs/paper/` (not committed if the course forbids sharing it).
 
 Then tell the user in 3-5 lines: what you understand the next task to be, which files you will
@@ -44,13 +45,13 @@ Edit ONLY the paths your member owns (listed at the top of their member file and
 
 | Member | Owns |
 | --- | --- |
-| 1 | `src/lrrep/{config,contracts,io,fake,stats,timing,pipeline}.py`, `src/lrrep/portfolios/solver.py`, `tests/test_shared.py`, `config.yaml`, root docs, `.github/`, `report/` (final edit) |
+| 1 | `src/lrrep/{config,contracts,io,fake,stats,timing,pipeline}.py`, `src/lrrep/portfolios/solver.py`, `src/lrrep/report/code_appendix.py`, `tests/test_shared.py`, `config.yaml`, root docs, `.github/`, `report/` (final edit) |
 | 2 | `src/lrrep/data/crsp.py`, `tests/test_member_2.py` |
 | 3 | `src/lrrep/betas/`, `tests/test_member_3.py` |
-| 4 | `src/lrrep/portfolios/factor_exposure.py`, `src/lrrep/tests_ap/fama_macbeth.py`, `tests/test_member_4.py` |
+| 4 | `src/lrrep/portfolios/factor_exposure.py`, `src/lrrep/tests_ap/fama_macbeth.py`, `src/lrrep/tests_ap/cashflow_news.py`, `tests/test_member_4.py` |
 | 5 | `src/lrrep/forecast/`, `tests/test_member_5.py` |
-| 6 | `src/lrrep/portfolios/main_portfolios.py`, `tests/test_member_6.py` |
-| 7 | `src/lrrep/data/external_factors.py`, `src/lrrep/tests_ap/alphas.py`, `src/lrrep/report/`, `tests/test_member_7.py`, `slides/` |
+| 6 | `src/lrrep/portfolios/main_portfolios.py`, `src/lrrep/portfolios/costs.py`, `tests/test_member_6.py` |
+| 7 | `src/lrrep/data/external_factors.py`, `src/lrrep/tests_ap/alphas.py`, `src/lrrep/report/comparison.py`, `tests/test_member_7.py`, `slides/` |
 
 Everyone may edit: their own `docs/status/member-<N>.md`, their own section file in `report/sections/`,
 their own row in `docs/DEVIATIONS.md`, and new helper modules inside their own folder.

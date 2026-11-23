@@ -1,49 +1,47 @@
-# Member 2: CRSP data
+# Member 2: CRSP data, earnings dates, summary statistics
 
 **Owns:** `src/lrrep/data/crsp.py`, `tests/test_member_2.py`.
-**Writes:** `crsp_daily`, `crsp_monthly`, `market` (formats: `docs/CONTRACTS.md`).
-**Read by:** Members 3 (daily), 4, 5, 6, 7 (monthly, market). You are on the critical path on day 1-2.
-**Paper:** Section 3.1 (Data).
+**Writes:** `crsp_daily`, `crsp_monthly`, `market`, `earnings_dates`; `results/tables/summary_stats.csv`.
+**Read by:** Members 3 (daily), 4, 5, 6, 7. You are on the critical path for days 1-2.
+**Paper:** Section 3.1 (Data). **Report:** section 5 (data sources + summary statistics table).
 
 ## Start here
 
 ```bash
 pip install wrds          # or: pip install -e ".[wrds]"
 python -c "import wrds; db = wrds.Connection()"   # creates ~/.pgpass on first login; never commit it
-make test                 # tests/test_member_2.py is skipped until build_monthly exists
+python -m pytest tests/test_member_2.py           # skipped until build_monthly exists
 ```
 First check which CRSP format your account has (legacy `crsp.msf`/`crsp.dsf` or CIZ `crsp.msf_v2`/`crsp.dsf_v2`)
-and write it in `docs/status/member-2.md` and `docs/DEVIATIONS.md` row 7.
+and the **last month available**. Write both in `docs/status/member-2.md` and tell Member 1 (it sets the extension's end date).
 
 ## Day by day (suggested pace)
 
 Work at your own pace. If you need another member's file before it's ready, keep going on fake data and message them.
 
-- [ ] **Day 1 (morning)** Confirm WRDS access. If you don't have it, tell Member 1 immediately and ask the GT library; someone else may have it.
-- [ ] **Day 1** `pull_monthly`: monthly returns, price, shares, share and exchange codes (valid on that date), delisting returns, 1965-2021.
-- [ ] **Day 1** `pull_risk_free_and_market`: Ken French F-F factors (monthly and daily); convert percent to decimals.
-- [ ] **Day 1** `build_monthly` (make `tests/test_member_2.py` pass): delisting-adjusted `ret`, `exret`, `me = |prc|*shrout/1000`, NYSE 20th-percentile size filter → `in_universe`.
-- [ ] **Day 2 (by noon)** Deliver a 1990-1994 slice of all three files to the shared folder so others test on real data.
-- [ ] **Day 2** `pull_daily` (year by year, only permnos ever in the universe) and `build_daily`; deliver full `crsp_daily`, `crsp_monthly`, `market` by end of day 2.
-- [ ] **Day 2** Sample stats for the report: stocks in universe per year (save `results/tables/sample_stats.csv`).
-- [ ] **Day 3** Help Member 5 merge Chen-Zimmermann signals on permno-month; data sanity checks (no duplicate keys, returns within [-1, 10], no gaps for live stocks).
-- [ ] **Day 4** Figure: number of stocks in universe over time (`results/figures/universe.png`); write `report/sections/02-data.md`.
-- [ ] **Day 5** Finalize data section; fill deviation rows 6-7.
+- [ ] **Day 1** Confirm WRDS access (CRSP and Compustat). No access? Tell Member 1 at once; someone else may have it.
+- [ ] **Day 1** `pull_monthly`, `pull_risk_free_and_market`, `build_monthly` (make the test pass), 1965 to the **latest available month** (the extension needs data past 2021).
+- [ ] **Day 2** Deliver a 1990-1994 slice early, then the full `crsp_daily`, `crsp_monthly`, `market`.
+- [ ] **Day 3** `pull_earnings_dates` (Compustat `fundq.rdq` linked to permno) → `earnings_dates` for Member 4's cash-flow news test.
+- [ ] **Day 3** `summary_stats` table for the report (stocks per month, returns, size, by decade).
+- [ ] **Day 4** Data checks (no duplicate keys, returns within [-1, 10], no gaps for live stocks); help Member 5 merge characteristics on permno-month if needed.
+- [ ] **Day 5** Report section 5 draft (sources, filters, summary statistics, universe chart `results/figures/universe.png`); deviation rows 6-7 in `docs/DEVIATIONS.md`.
+- [ ] **Day 6-7** Your 1-2 slides (data and sample); rehearsal.
 
 ## Spec details
 
 - Delisting: `ret_total = (1+ret)(1+dlret) - 1`; if `ret` is missing and `dlret` exists, use `dlret`.
-- `in_universe` at t: shrcd in {10, 11}, exchcd in {1, 2, 3}, and `me_t >= p20` where p20 is the 20th percentile of `me` among exchcd == 1 stocks at t.
-- `crsp_daily` must include each universe stock's days for the 12 months BEFORE each month it is in the universe (Member 3 needs the trailing window). Simplest: keep all days for permnos ever in the universe.
-- Months as month-end timestamps; `permno` int64; returns decimals.
+- `in_universe` at t: shrcd in {10, 11}, exchcd in {1, 2, 3}, `me_t >= p20`, the 20th percentile of `me` among NYSE (exchcd == 1) stocks at t.
+- Keep all daily rows of permnos ever in the universe (Member 3 needs trailing 12-month windows).
+- Earnings dates: link with `ccmxpf_lnkhist` (linktype LU/LC, linkprim P/C, rdq inside the link dates).
 
 ## Definition of done
 
-Three files in the shared folder, saved with `lrrep.io.save` (contract validated), dated 1965-01 to 2021-12;
-test passes; sample stats table; chat message with rows and date ranges.
+Four files in the shared folder via `lrrep.io.save` (validated), through the latest month; test passes;
+summary statistics table; chat message with rows and date ranges.
 
 ## Pitfalls
 
-- CRSP price is negative when it's a bid-ask average: always use `abs(prc)`.
-- Share and exchange codes change over time: use the record valid on that date, not the latest.
-- Don't drop a stock-month just because it's out of the universe: keep it with `in_universe = False` (others need its returns).
+- CRSP price is negative when it's a bid-ask average: always `abs(prc)`.
+- Share and exchange codes change over time: use the record valid on that date.
+- Keep out-of-universe stock-months (flag them False); others need their returns.

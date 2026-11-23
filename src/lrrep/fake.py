@@ -134,7 +134,25 @@ def make_fake_data(seed: int | None = None) -> dict[str, pd.DataFrame]:
     pf = pd.DataFrame({"month": months, "mkt": fx["mkt_rf"].to_numpy(),
                        "ls_main": rng.normal(0.008, 0.035, T_m), "bn_main": rng.normal(0.007, 0.015, T_m)})
 
-    return {"crsp_daily": crsp_daily, "crsp_monthly": crsp_monthly, "market": market,
+    # earnings announcements: one per stock per quarter, ~day 25-45 after quarter end
+    q_ends = pd.date_range(f["start"], pd.Timestamp(f["end"]) + pd.offsets.MonthEnd(0), freq="QE")
+    ed = [(p, q + pd.Timedelta(days=int(rng.integers(25, 45)))) for p in permnos for q in q_ends]
+    earnings_dates = pd.DataFrame(ed, columns=["permno", "rdq"])
+    earnings_dates["permno"] = earnings_dates["permno"].astype("int64")
+    earnings_dates = earnings_dates[earnings_dates["rdq"] <= days[-1]].drop_duplicates(["permno", "rdq"])
+    # portfolio weights: random zero-sum, gross 2, per month (just for shape)
+    pw = base[["permno", "month"]].copy()
+    for col in ["w_ls", "w_bn"]:
+        x = rng.normal(size=len(pw))
+        pw[col] = x
+        pw[col] = pw[col] - pw.groupby("month")[col].transform("mean")
+        pw[col] = 2 * pw[col] / pw.groupby("month")[col].transform(lambda v: v.abs().sum())
+
+    betas_svd_weekly = betas_svd.copy()
+    for j in range(kb):
+        betas_svd_weekly[f"beta_{j + 1}"] += rng.standard_normal(len(base)) * 0.05
+
+    return {"crsp_daily": crsp_daily, "betas_svd_weekly": betas_svd_weekly, "earnings_dates": earnings_dates, "portfolio_weights": pw, "crsp_monthly": crsp_monthly, "market": market,
             "factors_ext": fx, "betas_svd": betas_svd, "eigen": eigen, "chars_clean": chars_clean,
             "mu_hat": mu_hat, "factor_portfolios": fp, "portfolios": pf}
 
