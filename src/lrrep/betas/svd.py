@@ -158,13 +158,24 @@ def figure1(eigen: pd.DataFrame) -> None:
     import matplotlib.pyplot as plt
 
     k_max = CFG["betas"]["k_max"]
-    e = eigen.sort_values(["month", "k"]).copy()
+    # the paper's Figure 1 averages over its sample, 1974-2021
+    lo = pd.Timestamp(CFG["sample"]["start"]) + pd.offsets.MonthEnd(0)
+    hi = pd.Timestamp(CFG["sample"]["paper_end"]) + pd.offsets.MonthEnd(0)
+    e = eigen[eigen["month"].between(lo, hi)]
+    if e.empty:                                          # e.g. a test slice outside the paper's sample
+        e = eigen
+    e = e.sort_values(["month", "k"]).copy()
     e["cum_share"] = e.groupby("month")["share_explained"].cumsum()
     avg = e[e["k"] <= k_max].groupby("k")["cum_share"].mean()
 
     fig, ax = plt.subplots(figsize=(7, 4.5))
     ax.plot(avg.index, avg.to_numpy() * 100, color="#1f4e79", lw=2)
-    for k in (5, 50):
+    # paper's Figure 1 (read off the plot): about 8% at k = 1, 47% at k = 50, 67% at k = 100
+    paper = {1: 0.08, 50: 0.47, 100: 0.67}
+    ax.scatter(list(paper), [v * 100 for v in paper.values()], marker="x", color="grey",
+               label="paper, Figure 1 (approx.)", zorder=3)
+    ax.legend(loc="lower right")
+    for k in (5, 50, 100):
         if k in avg.index:
             ax.scatter([k], [avg[k] * 100], color="#c0392b", zorder=3)
             ax.annotate(f"k = {k}: {avg[k]:.0%}", (k, avg[k] * 100), textcoords="offset points",
