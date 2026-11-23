@@ -12,6 +12,7 @@ This becomes a section of our report. Each owner fills in their row and keeps it
 | 5 | Missing daily returns set to 0 after demeaning in the SVD | Paper does not say how missing days are handled | Small effect on betas of thinly traded stocks | 3 | planned |
 | 6 | Sample start (fill in only if shortened from 1974) | Compute | A shorter, post-2000-heavy sample lowers the Sharpe ratio | 2 | open |
 | 7 | CRSP format used (legacy vs CIZ) and any filter mapping | Data access | Should be negligible; note it | 2 | open |
+| 8 | Stambaugh-Yuan model uses Fama-French SMB (paper: SY's own SMB); FF, q5, SY in decimals so SY loadings are ~100x the paper's (paper appears to mix percent portfolio returns with decimal SY factors) | `factors_ext` contract has one `smb`; units kept consistent | SY alpha may differ slightly; SY loadings not comparable in scale to Table 11, t-stats are. SY data end 2016-12 (as in the paper: N = 516), so no SY alphas post-publication | 7 | done |
 
 Note: running the sample past 2021 is our EXTENSION, not a deviation. Replication tables stop at
 `sample.paper_end` (2021-12) so they are comparable with the paper.
