@@ -59,7 +59,100 @@ def build_monthly(msf: pd.DataFrame, rf_monthly: pd.DataFrame) -> pd.DataFrame:
       (percentile over exchcd == 1 stocks only).
     Columns exactly as CONTRACTS['crsp_monthly'].
     """
-    raise NotImplementedError("Member 2: build crsp_monthly")
+
+    # Work on copies so that the original inputs are not modified.
+    df = msf.copy()
+    rf = rf_monthly.copy()
+
+    # Standardize month-end dates.
+    df["month"] = (
+        pd.to_datetime(df["month"]) + pd.offsets.MonthEnd(0)
+    )
+    rf["month"] = (
+        pd.to_datetime(rf["month"]) + pd.offsets.MonthEnd(0)
+    )
+
+    # Check that each stock-month and risk-free month is unique.
+    if df.duplicated(["permno", "month"]).any():
+        raise ValueError("Duplicate CRSP stock-month observations")
+    if rf.duplicated(["month"]).any():
+        raise ValueError("Duplicate risk-free month observations")
+
+    # Convert financial inputs to numeric values.
+    for col in ["ret", "dlret", "prc", "shrout"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    for col in ["shrcd", "exchcd"]:
+        df[col] = pd.to_numeric(df[col], errors="coerce")
+
+    rf["rf"] = pd.to_numeric(rf["rf"], errors="coerce")
+
+    # Delisting-adjusted returns.
+    df["ret_total"] = (1 + df["ret"]) * (1 + df["dlret"]) - 1
+
+    # If there is no delisting, use the ordinary return.
+    df["ret_total"] = df["ret_total"].fillna(df["ret"])
+
+    # If the ordinary return is missing, use the delisting return.
+    df["ret_total"] = df["ret_total"].fillna(df["dlret"])
+
+    # Market capitalization in millions of dollars.
+    df["me"] = df["prc"].abs() * df["shrout"] / 1000
+
+    # Join monthly risk-free rates.
+    df = df.merge(
+        rf[["month", "rf"]],
+        on="month",
+        how="left",
+        validate="many_to_one",
+    )
+
+    if df["rf"].isna().any():
+        raise ValueError("Missing risk-free rate for some months")
+
+    df["exret"] = df["ret_total"] - df["rf"]
+
+    # Eligible common stocks on NYSE, AMEX, and NASDAQ.
+    eligible = (
+        df["shrcd"].isin(CFG["universe"]["shrcd"])
+        & df["exchcd"].isin(CFG["universe"]["exchcd"])
+    )
+
+    # NYSE common-stock universe for the size breakpoint.
+    nyse = df.loc[
+        (df["exchcd"] == 1)
+        & df["shrcd"].isin(CFG["universe"]["shrcd"])
+        & (df["me"] > 0)
+    ]
+
+    breakpoints = (
+        nyse.groupby("month")["me"]
+        .quantile(0.20)
+        .rename("nyse_p20")
+    )
+
+    df = df.join(breakpoints, on="month")
+
+    # Apply the NYSE breakpoint to all eligible exchanges.
+    df["in_universe"] = (
+        eligible
+        & df["me"].notna()
+        & df["nyse_p20"].notna()
+        & (df["me"] >= df["nyse_p20"])
+    ).astype(bool)
+
+    # Return exactly the columns required by the contract.
+    out = df[
+        [
+            "permno", "month", "ret_total", "exret",
+            "me", "exchcd", "shrcd", "in_universe"
+        ]
+    ].rename(columns={"ret_total": "ret"})
+
+    out["permno"] = out["permno"].astype("int64")
+
+    return out.sort_values(["permno", "month"]).reset_index(drop=True)
+
 
 
 def build_daily(dsf: pd.DataFrame, rf_daily: pd.DataFrame, monthly: pd.DataFrame) -> pd.DataFrame:
