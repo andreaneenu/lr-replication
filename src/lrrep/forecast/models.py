@@ -19,6 +19,8 @@ and the average spread in realized exret between the top and bottom deciles of m
 """
 from __future__ import annotations
 
+from pathlib import Path
+
 import numpy as np
 import pandas as pd
 
@@ -67,10 +69,12 @@ def retrain_months(chars: pd.DataFrame) -> list[pd.Timestamp]:
     return [pd.Timestamp(m) for m in months[f["train_months"]::f["retrain_every_months"]]]
 
 
-def rolling_forecasts(pairs: pd.DataFrame, chars: pd.DataFrame, model: str) -> pd.Series:
+def rolling_forecasts(pairs: pd.DataFrame, chars: pd.DataFrame, model: str, cache_dir=None) -> pd.Series:
     """Fit every retrain_every_months on the trailing train_months window and predict forward.
     Returns a Series indexed like `chars` (permno, month) of forecasts for model `model`.
-    Must never fit on targets dated after the formation month being predicted."""
+    Must never fit on targets dated after the formation month being predicted.
+    cache_dir: if given, each retraining year's predictions are saved there and reused on a rerun,
+    so a crash part-way through the random forest loses at most one year."""
     f = CFG["forecast"]
     feats = _feature_cols(chars)
     months = pd.DatetimeIndex(sorted(chars["month"].unique()))
@@ -78,28 +82,93 @@ def rolling_forecasts(pairs: pd.DataFrame, chars: pd.DataFrame, model: str) -> p
 
     for t0 in retrain_months(chars):
         i0 = months.get_loc(t0)
+        pred_t = months[i0: i0 + f["retrain_every_months"]]
+        mask = chars["month"].isin(pred_t)
+        cache = None if cache_dir is None else Path(cache_dir) / f"{model}_{t0:%Y%m}.parquet"
+        if cache is not None and cache.exists():
+            got = chars.loc[mask, ["permno", "month"]].merge(pd.read_parquet(cache), on=["permno", "month"], how="left")
+            out[mask] = got["mu"].to_numpy()
+            print(f"  {model}: {t0:%Y-%m} loaded from cache")
+            continue
         # training formation months s = t0-60 .. t0-1, so the latest target is exret at t0
         train_s = months[i0 - f["train_months"]: i0]
         train = pairs[pairs["month"].isin(train_s)].dropna(subset=["y"]).sort_values("month")
         if train.empty:
             continue
+        # paper Section 3.1: within each training window, drop characteristics missing for more than
+        # 1 - min_coverage of rows, then fill the rest with the median (0 after rank standardization)
+        use = [c for c in feats if train[c].notna().mean() >= f["min_coverage"]]
         est = make_model(model)
-        est.fit(train[feats].fillna(0.0).to_numpy(), train["y"].to_numpy())
+        est.fit(train[use].fillna(0.0).to_numpy(dtype="float64"), train["y"].to_numpy(dtype="float64"))
         # predict formation months t0 .. t0+11 with this fit
-        pred_t = months[i0: i0 + f["retrain_every_months"]]
-        mask = chars["month"].isin(pred_t)
         if mask.any():
-            out[mask] = est.predict(chars.loc[mask, feats].fillna(0.0).to_numpy())
-        print(f"  {model}: fit at {t0:%Y-%m} on {len(train):,} rows -> "
+            out[mask] = est.predict(chars.loc[mask, use].fillna(0.0).to_numpy(dtype="float64"))
+        if cache is not None:
+            cache.parent.mkdir(parents=True, exist_ok=True)
+            chars.loc[mask, ["permno", "month"]].assign(mu=out[mask].to_numpy()).to_parquet(cache, index=False)
+        print(f"  {model}: fit at {t0:%Y-%m} on {len(train):,} rows x {len(use)} chars -> "
               f"predicted {pred_t[0]:%Y-%m}..{pred_t[-1]:%Y-%m}")
     return out
 
 
 def run(fake: bool = False, models: tuple[str, ...] = MODELS) -> None:
-    chars, monthly = load("chars_clean", fake), load("crsp_monthly", fake)
+    """Forecast with `models` and save mu_hat after each one (OLS/LASSO land before the slow
+    forest). Columns of models not run now are kept from an existing mu_hat, else NaN."""
+    from lrrep.io import path_for
+
+    chars = load("chars_clean", fake)
+    monthly = load("crsp_monthly", fake, columns=["permno", "month", "exret"])
     pairs = training_pairs(chars, monthly)
     out = chars[["permno", "month"]].copy()
+    old = load("mu_hat", fake) if path_for("mu_hat", fake).exists() else None
     for m in MODELS:
-        out[f"mu_{m}"] = rolling_forecasts(pairs, chars, m).to_numpy() if m in models else np.nan
-    save(out, "mu_hat", fake)
-    _ = CFG
+        col = f"mu_{m}"
+        out[col] = (out[["permno", "month"]].merge(old[["permno", "month", col]], on=["permno", "month"], how="left")[col]
+                    .to_numpy() if old is not None else np.nan)
+    # cache keyed to this chars_clean version, so rebuilding chars_clean never reuses stale fits
+    stamp = int(path_for("chars_clean", fake).stat().st_mtime)
+    cache_dir = None if fake else path_for("mu_hat").parent / "forecast_cache" / str(stamp)
+    for m in models:
+        out[f"mu_{m}"] = rolling_forecasts(pairs, chars, m, cache_dir=cache_dir).to_numpy()
+        save(out, "mu_hat", fake)
+        print(f"mu_hat saved with {m}")
+    print(forecast_quality(out, monthly).to_string())
+
+
+def forecast_quality(mu: pd.DataFrame, monthly: pd.DataFrame) -> pd.DataFrame:
+    """REPORT: per model, over formation months sample.start-1 .. sample.end-1 (returns realized
+    in the sample): out-of-sample R^2 against a zero forecast, 1 - sum((y - mu)^2) / sum(y^2),
+    and the average monthly top-minus-bottom decile spread in realized exret (%, with t-stat).
+    Saved as forecast_quality."""
+    from lrrep.io import save_table
+
+    s = CFG["sample"]
+    lo = pd.Timestamp(s["start"]) + pd.offsets.MonthEnd(0) - pd.offsets.MonthEnd(1)
+    d = training_pairs(mu, monthly)
+    d = d[d["month"] >= lo].dropna(subset=["y"])
+    rows = []
+    for m in MODELS:
+        col = f"mu_{m}"
+        x = d.dropna(subset=[col])
+        if x.empty:
+            rows.append({"model": m})
+            continue
+        r2 = 1.0 - ((x["y"] - x[col]) ** 2).sum() / (x["y"] ** 2).sum()
+        dec = x.groupby("month")[col].transform(lambda v: pd.qcut(v.rank(method="first"), 10, labels=False))
+        by = x.assign(dec=dec).groupby(["month", "dec"])["y"].mean().unstack()
+        spread = (by[9] - by[0]).dropna()
+        rows.append({"model": m, "oos_r2_vs_zero_pct": 100 * r2, "decile_spread_pct_per_month": 100 * spread.mean(),
+                     "spread_tstat": spread.mean() / spread.std() * np.sqrt(len(spread)),
+                     "n_months": len(spread), "first_month": f"{x.month.min():%Y-%m}",
+                     "last_month": f"{x.month.max():%Y-%m}"})
+    q = pd.DataFrame(rows).set_index("model")
+    save_table(q, "forecast_quality")
+    return q
+
+
+if __name__ == "__main__":
+    # python -m lrrep.forecast.models ols lasso   (real data; add --fake for fake data)
+    import sys
+
+    args = [a for a in sys.argv[1:] if a != "--fake"]
+    run(fake="--fake" in sys.argv, models=tuple(args) or MODELS)
