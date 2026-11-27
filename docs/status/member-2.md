@@ -2,6 +2,38 @@
 
 Update at the end of every work session (newest entry on top). Only Member 2 edits this file.
 
+## 2026-11-27 — 2025 extension completed
+
+- **Done:**
+  - Downloaded and processed CRSP CIZ monthly and daily observations for 2025.
+  - Constructed the broad CIZ 2025 investment universe.
+  - Created the extended 1965–2025 monthly and daily datasets.
+  - Validated monthly contract, row counts, date coverage, and daily excess-return calculations.
+  - Confirmed all 2,683 distinct 2025 eligible monthly securities have at least one 2025 daily observation.
+
+- **Extended datasets:**
+  - `crsp_monthly_1965_2025.parquet`: 4,794,499 observations; 1,377,927 eligible stock-months.
+  - `crsp_daily_1965_2025.parquet`: 49,133,093 observations.
+  - Both cover January 1965 through December 2025.
+
+- **Methodological decision:**
+  - Through 2024, eligibility uses legacy CRSP share codes 10/11 and exchange codes 1/2/3.
+  - For 2025, eligibility uses CIZ `EQTY/COM/NS`, exchanges N/A/Q, and the monthly NYSE 20th-percentile size filter.
+  - The 2025 `shrcd` and `exchcd` values are compatibility proxies, not genuine legacy classifications.
+  - The 2025 rule is broader than the historical rule and may affect extension results.
+
+- **Validation limitations:**
+  - Daily duplicate checks were performed within processing batches; a global uniqueness check remains outstanding.
+  - Full 252-day historical coverage for newly eligible securities has not been established.
+
+- **Blocked on:**
+  - `earnings_dates.parquet` requires authorized CRSP–Compustat Merged linking-table access.
+
+- **Next:**
+  - Confirm OneDrive delivery and coordinate which filenames the team will use.
+  - Finalize report Section 5 and presentation slides.
+
+
 ## 2026-11-26
 
 - **Done:**
